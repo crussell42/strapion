@@ -10,12 +10,12 @@ intended to do in strapi what the creators would not like you to do. I dont know
 
 ## Requirements
 A running strapi4 app.
-e.g. 
-`code psql> create database cowdb; `
-
-` npx create-strapi-app@latest cow` 
-
-` git clone`
+e.g.   
+`psql> create database cowdb; `  
+`$ npx create-strapi-app@latest cow`   
+Fill in database connection information for database cowdb.
+   
+`git clone`
 
 ## Objective
 1. Place to collect thoughts and notes on how I broke the rules of strapi.
