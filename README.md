@@ -11,23 +11,40 @@ intended to do in strapi what the creators would not like you to do. I dont know
 - npm 7.15
 
 ## Quick Start
-Need A clean running strapi4 app.
+### ejs-middleware test (contained in the ejs directory) 
+Test a basic .ejs file render. (From browser http://localhost:1337/dog/views/pig.ejs) 
+Need A clean running strapi4 app named "cow".
 e.g.   
 `psql> create database cowdb; `  
 `$ npx create-strapi-app@latest cow`   
-Fill in database connection information for database cowdb.
-   
-`git clone git@github.com:crussell42/strapion.git`
-`
-To play with the ejs-middleware 
-Note: strapi does not seem to read symbolic links..
-So you need to copu or merge these files into your app
--or- clone the code inside your app but this can get messy.
-# cd strapion
-# cp ejs/config/middlewares.js ../cow/config/
-# cp ejs/src/middlewares/ejs-middleware.js ../cow/src/middlewares/
 
-`
+Fill in database connection information for database cowdb.  
+So we now have a running strapi app in directory ./cow  
+Lets check out this repository.  
+
+`$ git clone git@github.com:crussell42/strapion.git`  
+
+So our directory structure looks like this now.  
+`$ ls`     
+./cow  <- working strapi app.   
+./strapion <- this repository.   
+
+Now, lets test the ejs-middleware.
+Note: strapi does not seem to read symbolic links...hard links may work depending on your environment   
+So you need to copy or merge these files into cow.   
+-or- clone the repo inside cow but this can get messy.  
+
+`$ cd strapion`  
+`$ cp ejs/config/middlewares.js ../cow/config/`  
+`$ cp ejs/src/middlewares/ejs-middleware.js ../cow/src/middlewares/`  
+
+`$ cd ../cow`  
+`$ mkdir dog`  
+`$ mkdir dog/views`  
+`$ cp ../strapion/ejs/test-views/pig.ejs dog/views/`  
+`$ npm run develop`  
+
+Browser to http://localhost:1337/dog/views/pig.ejs  
 
 ## Objective
 1. Place to collect thoughts and notes on how I broke the rules of strapi.
