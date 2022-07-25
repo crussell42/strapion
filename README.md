@@ -11,7 +11,7 @@ intended to do in strapi what the creators would not like you to do. I dont know
 - npm 7.15
 
 ## Quick Start
-### ejs-middleware test (contained in the ejs directory) 
+### EJS ejs-middleware test (contained in the ejs directory) 
 Test a basic .ejs file render. (From browser http://localhost:1337/dog/views/pig.ejs) 
 Need A clean running strapi4 app named "cow".
 e.g.   
@@ -53,6 +53,13 @@ A Lot of the code and hints I got were from strapi3 and and a bunch of looking a
 There are a lot of docs on strapi4 but the detail is still fairly light.
 (e.g. try and find what attributes the strapi object has now...used to have it in strapi3)
 If any of this helps I have acheived the goal. 
+
+## STRAPI4 GRIPES
+- strapi4 is now using winston 3.3.3 but they didnt duplicate console.log stype logging. Even using %o or %j didnt work.
+So a simple console.log('Inspect an object',myobject)  
+Should have become `strapi.log.debug('Inspect an object',myobject)`  
+But NO...now its `strapi.log.debug('Inspect an object',util.inspect(myobject,{showHidden:false,depth:null}))`  
+Should have stuck with pino...maybe it will get corrected...maybe I'm doing it wrong...cant worry about it now.
 
 ## Quick Rant
 `Everyone has an opinion about how we should or shouldnt use strapi.

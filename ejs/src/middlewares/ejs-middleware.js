@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const render = require('koa-ejs');
+const util = require('util');
 
 //EJS-MIDDLEWARE.
 // This just uses the koa-ejs to render ejs files
@@ -35,13 +36,14 @@ module.exports = (config, {strapi})=> {
     const viewDir = path.join(appDir,config.viewdir || 'views');
 
 
-    console.log('EJS-MIDDLEWARE directory where your app lives:'+appDir);
-    console.log('EJS-MIDDLEWARE directory where your .ejs files live:'+viewDir);
+    strapi.log.debug('EJS-MIDDLEWARE directory where your app lives:'+appDir);
+    strapi.log.debug('EJS-MIDDLEWARE directory where your .ejs files live:'+viewDir);
 
     // The real meat of the thing is here.
     // This adds a method render to the ctx object so that you can call
     // await ctx.render('my-ejs-file-name',{bunch of data to be used in the ejs});
     // which returns a clump of html (e.g. ctx.body = html generated from ejs file)
+    // -Should change to allow config to override this stuff e.g. config.ejs.root, layout, viewExt, etc object.
     render(strapi.server.app,{
 	root: viewDir,
 	fs: fs, //require('mz/fs'),
@@ -71,7 +73,7 @@ module.exports = (config, {strapi})=> {
 
     let routePathsNeeded = walkDir(viewDir);
     
-    console.log('EJS-MIDDLEWARE routePathsNeeded:'+routePathsNeeded);
+    strapi.log.debug('EJS-MIDDLEWARE routePathsNeeded:'+routePathsNeeded);
 
     let routes = routePathsNeeded.map((rp) => {
 	return {
@@ -79,16 +81,23 @@ module.exports = (config, {strapi})=> {
 	    path: rp.replace(strapi.dirs.root,'')+'/(.*)',
 	    handler: async (ctx,next) => {
 		let ejsPageName = ctx.url.split('/').pop().split('.')[0];
-		console.log('WTF:'+rp+' basename:'+path.basename(rp)+' url:'+ctx.url+' ejsPageName:'+ejsPageName);
+		strapi.log.debug('ejs rendering:'+ejsPageName);
 		await ctx.render(ejsPageName,{title: 'EJS OBJECT TITLE',strapi: strapi});
 	    },
 	    config: {auth: false}
 	}
     });
-    console.log('EJS-MIDDLEWARE ROUTES ADDED',routes);
+    //console.log('EJS-MIDDLEWARE ROUTES ADDED:',routes);
+    //strapi4 uses winston 3.3.3...was pino before and now we dont get the simple replacement for console.x (Damnit man!)
+    //strapi.log.debug(routes); => [[Object],[Object]]
+    // What a pain in the ass. Looks like strapi has not duplicated console.x functionality,
+    
+    strapi.log.debug('EJS-MIDDLEWARE ROUTES ADDED: '+util.inspect(routes,{showHidden:false,depth:null}));
+
 
     strapi.server.routes(routes);
-    /*
+    
+    /* example route
     [
 	{
             method: 'GET',
