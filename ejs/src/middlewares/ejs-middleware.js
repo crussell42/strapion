@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const koaStatic = require('koa-static');
 
 const render = require('koa-ejs');
 
@@ -33,12 +32,11 @@ const render = require('koa-ejs');
 module.exports = (config, {strapi})=> {
 
     const appDir = path.resolve(strapi.dirs.root, config.appdir);
+    const viewDir = path.join(appDir,config.viewdir || 'views');
 
 
-
-    console.log('OSA-MIDDLEWARE directory where your app lives:'+appDir);
-    //console.log('OSA-MIDDLEWARE server.routes:'+strapi.server.routes);
-    //console.log('OSA-MIDDLEWARE strapi:',strapi);
+    console.log('EJS-MIDDLEWARE directory where your app lives:'+appDir);
+    console.log('EJS-MIDDLEWARE directory where your .ejs files live:'+viewDir);
     
     //return an array of directory names below a given path.
     let walkDir = function(dir) {
@@ -50,44 +48,26 @@ module.exports = (config, {strapi})=> {
 	return results;
     }
 
+    let routePathsNeeded = walkDir(viewDir);
     
-    let routePathsNeeded = walkDir(appDir);
-    
-    console.log('OSA-MIDDLEWARE routePathsNeeded:'+routePathsNeeded);
-
-    const serveStatic = (filesDir, koaStaticOptions = {}) => {
-	const serve = koaStatic(filesDir, koaStaticOptions);
-	
-	return async (ctx, next) => {
-	    const prev = ctx.path;
-	    const newPath = path.basename(ctx.path);
-	    ctx.path = newPath;
-	    await serve(ctx, async () => {
-		ctx.path = prev;
-		await next();
-		ctx.path = newPath;
-	    });
-	    ctx.path = prev;
-	};
-    };
-
+    console.log('EJS-MIDDLEWARE routePathsNeeded:'+routePathsNeeded);
 
     let routes = routePathsNeeded.map((rp) => {
 	return {
 	    method: 'GET',
 	    path: rp.replace(strapi.dirs.root,'')+'/(.*)',
-	    handler: serveStatic(rp,{maxage: 60000,defer: true}),
+	    handler: async (ctx,next) => {
+		let ejsPageName = ctx.url.split('/').pop().split('.')[0];
+		console.log('WTF:'+rp+' basename:'+path.basename(rp)+' url:'+ctx.url+' ejsPageName:'+ejsPageName);
+		await ctx.render(ejsPageName,{title: 'EJS OBJECT TITLE',strapi: strapi});
+	    },
 	    config: {auth: false}
 	}
     });
-    //console.log('ROUTES',routes);
-
-    //strapi.server.routes(routes);
-    
-    //console.log('OAS-MIDDLEWARE INITIALIZATION:',strapi.server.router);
+    console.log('EJS-MIDDLEWARE ROUTES ADDED',routes);
 
     render(strapi.server.app,{
-	root: path.join(strapi.dirs.root, 'dog/views'),
+	root: viewDir,
 	fs: fs, //require('mz/fs'),
 	layout: false, //'template',
 	viewExt: 'ejs',
@@ -95,7 +75,9 @@ module.exports = (config, {strapi})=> {
 	debug: false
     });
     
-    strapi.server.routes([
+    strapi.server.routes(routes);
+    /*
+    [
 	{
             method: 'GET',
             path: '/dog/views/(.*)',
@@ -107,143 +89,10 @@ module.exports = (config, {strapi})=> {
             config: { auth: false },
 	}	
     ]);
-    
+    */
 
     
     return null;
 
-    // if no resource is matched by koa-static, just default to serve index file
-    // useful for SPA routes
-    //strapi.router.get('*', ctx => {
-    //	ctx.type = 'html';
-    //	ctx.body = fs.createReadStream(path.join(staticDir + '/index.html'));
-    //});
 };
 
-/* works
-    strapi.server.router.get('/'+config.appdir+'/(.*)',
-			     async (ctx,next) => {
-				 console.log('FOUND A DOG IN '+ctx.url);
-				 console.log('MATCHED '+ctx._matchedRoute);				 
-				 await next();
-			     },
-			     async (ctx,next) => {
-				 console.log('STEP TWO');
-				 await next();
-			     },
-			    );
-*/
-
-/* These work.
-	{
-            method: 'GET',
-            path: '/dog/(.*)',
-	    handler: async (ctx,next) => {
-	    	console.log('FOUND A DOG IN '+ctx.url);
-	    	console.log('MATCHED '+ctx._matchedRoute);				 
-	    	await next();
-	    },
-            //handler: serve(staticDir, {
-	    //	maxage: 1000,
-	    //	defer: true,
-            //}),
-
-            config: { auth: false },
-	},
-	{
-            method: 'GET',
-            path: '/dog/(.*)',
-	    handler: async (ctx,next) => {
-	    	console.log('STEP TWO '+ctx.url);
-	    	await next();
-	    },
-            config: { auth: false },
-	},
-	Why does the following work but not 
-	{
-            method: 'GET',
-            path: '/dog/(.*)',
-            handler: koaStatic(staticDir,{maxage: 60000,defer: true}),
-            config: { auth: false },
-	}
-	It is an asyncy thing. 
-	Note the await serve call.
-	I had tried a similar thing but just fell back to strapi's own source.
-*/
-    
-    
-
-/* THIS WORKS
-    strapi.server.routes([
-
-	{
-            method: 'GET',
-            path: '/dog(.*)',
-            handler: serveStatic(staticDir,{maxage: 60000,defer: true}),
-            config: { auth: false },
-	}
-
-    ]);
-*/
-/* THIS WORKS
-    strapi.server.router.get(
-	'/dog/poop.html',
-	
-	async (ctx, next) => {
-	    console.log('FOUND A DOG IN '+ctx.url);
-	    console.log('MATCHED '+ctx._matchedRoute);
-
-	    const parse = path.parse(ctx.url);
-	    let newUrl = path.join(parse.dir, parse.base);
-	    console.log('NEW URL '+newUrl);
-	    //ctx.url = path.join(parse.dir, parse.base);
-
-	    ctx.type = 'html';
-    	    ctx.body = fs.createReadStream(path.join(staticDir + '/'+'poop.html'));
-
-	    
-	    await next();
-	},
-	
-	serve(staticDir+'/', {
-	    maxage: 0,
-	    defer: false, // do not allow other middleware to serve content before this one
-	})
-    );
-*/
-
-/* 
-
-
-
-
-  VEStIGAL ATTEMPTS
-    return async (ctx, next) => {
-    	await next();
-    	console.log('OSA-MIDDLEWARE');
-    	return ctx;
-    };
-    
-    
-    //DNW: strapi.server.use(serve('./dog',{maxAge:1000,defer:false}));
-
-    
-    return async(ctx,next) => {
-	return {
-	    initialize() {
-		strapi.log.info('YO MAN THIS IS THE OSA-MIDDLEWARE CONFIG',config);
-		//const {maxAge, path: publicPath} = strapi.config.middleware.settings.public;
-		//const staticDir = path.resolve(strapi.dir, publicPath || strapi.config.paths.static);
-	    
-	    }
-	}	
-    }
-    
-
-    //const {maxAge, path: publicPath} = strapi.config.middleware.settings.public;
-    //const staticDir = path.resolve(strapi.dir, publicPath || strapi.config.paths.static);
-
-
-    //const {maxAge, path: publicPath} = strapi.config.middleware.settings.public;
-
-*/
