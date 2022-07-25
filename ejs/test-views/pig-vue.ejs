@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+  
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+	  <title>EJS Vue test</title>
+    
+    
+    <!-- vuetify -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    
+    
+    
+    <style>
+      [v-cloak] { display: none; }
+      
+      .hero {
+	  /*background: url('/uploads/dog.jpg');
+	  background-size: cover;
+	  height: 100vh;*/
+      }
+    </style>
+    
+  </head>
+  
+
+
+  <body>	
+
+    <div id="app">
+      <div v-cloak>
+	<v-app>
+
+
+	  <v-app-bar class="white">
+
+	    <v-app-bar-nav-icon>
+	      <template v-slot:default>
+		<v-list-item-avatar>
+		  <!-- Added an image and copied the link -->
+		  <img src="/images/blue-big-teeth-white-back.jpg">
+		</v-list-item-avatar>		    
+	      </template>
+	    </v-app-bar-nav-icon>
+	    
+	    <v-toolbar-title class="mx-0" v-text="appBarTitle"></v-toolbar-title>
+	    <p>StrapiOn</p>
+	    <v-spacer></v-spacer>
+	    <v-toolbar-items>
+	    </v-toolbar-items>
+	    
+	  </v-app-bar>
+	  
+	  
+	  <v-main>
+
+
+	    <section>
+	      <v-parallax src="/images/blue-roswell.jpg" height="1600" contain>
+		<v-layout column align-center justify-center class="white--text">
+		  <h1 class="white--text mb-2 display-1 text-xs-center" style="font-weight: 900; text-shadow: 3px 2px #000000">The dogs name was Blue</h1>
+		  <div class="white--text subheading mb-3 text-xs-center" style="font-weight: 900; text-shadow: 2px 2px #000000">Roswell was the place</div>
+		  <div class="headline white--text mb-3 text-xs-center">Scroll Down For More Parallax fun</div>
+		  
+		  <% if (strapi != 'undefined') {%>
+		  <v-btn
+		    class="pink lighten-2 mt-5"
+		    dark
+		    large
+		    href="/images/blue-purple-left.png">
+		    A button for your pleasure in <%=strapi.dirs.root%>/public/images 
+		  </v-btn>
+		  <% } %>
+		  
+		</v-layout>
+	      </v-parallax>
+	    </section>
+	    
+	    <section>
+
+              <v-parallax src="/images/blue-purple-left.png" height="2000">
+		<v-layout column align-center justify-center>
+		  <div class="headline white--text mb-3 text-xs-center">The dog was named <b>Blue</b>.</div>
+		  <div class="headline white--text mb-3 text-xs-center">A bucktooth deer headed chiuaweenie...</div>
+		  <div class="headline white--text mb-3 text-xs-center">Blue was too pure for this world.</div>
+		  <div class="headline white--text mb-3 text-xs-center">R.I.P Blue. Your my boy blue!</div>
+		</v-layout>
+		<v-layout justify-space-around justify-center>
+
+
+		  <v-btn
+                    color="primary"
+                    fab
+                    dark                    
+                    >
+                    <v-icon x-large dark>mdi-facebook</v-icon>
+                  </v-btn>
+
+		  <v-btn
+                    color="#c32aa3"
+                    fab
+                    dark                    
+                    >
+                    <v-icon x-large dark>mdi-instagram</v-icon>
+                  </v-btn>
+
+		  <v-btn
+                    color="#0a66c2"
+                    fab
+                    dark                    
+                    >
+                    <v-icon x-large dark>mdi-linkedin</v-icon>
+                  </v-btn>
+		  
+		  <v-btn
+                    color="#ff0000"
+                    fab
+                    dark                    
+                    >
+                    <v-icon x-large dark>mdi-youtube</v-icon>
+                  </v-btn>
+
+		</v-layout>
+              </v-parallax>
+	    </section>
+
+
+
+	    
+	  </v-main>	
+	</v-app>
+      </div><!--cloak-->
+    </div> <!-- id=app-->
+	
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    
+    <script>  
+
+      new Vue({
+	  el: '#app',
+	  vuetify: new Vuetify(),
+	  data: {
+	      appBarTitle: 'PIG VUE',
+	      pageTitle: 'This is a test Vue page created from ejs',
+	      showpass: false,
+	      username: null,
+	      password: null,
+	  },
+	  computed: {
+	  },
+	  methods: {
+	  }
+      });
+
+    </script>
+    
+  </body>
+</html>  
+
+
