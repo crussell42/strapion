@@ -3,13 +3,14 @@ const path = require('path');
 
 const render = require('koa-ejs');
 
-//Run an client app from within KOA.
-//This is a kack fest.
+//EJS-MIDDLEWARE.
+// This just uses the koa-ejs to render ejs files
+// Just copy this file into yourstrapiapp/src/middlewares.
+// Then add the middleware to yourstrapiapp/config/middlewares.js
+//
 // 
-//MAN THIS SI CRAZY
 // Some Hints.
 //https://stackoverflow.com/questions/55090339/strapi-custom-routes-to-redirect-to-public-directory
-
 // STRAPI4 New Info.
 // 1. There is no initialize, the way this is declared, just put initialization code before the middleware code (async(ctx,next) return)
 //
@@ -25,8 +26,7 @@ const render = require('koa-ejs');
 //      regexp: /^\/uploads(?:\/(.*))[\/#\?]?$/i
 //    },
 // koa-router uses path-to-regexp in @koa/router, so the old /dog/* dont work.
-// Not sure what does...I hate regexp
-
+// /dog/(.*) does work.
 
 
 module.exports = (config, {strapi})=> {
@@ -37,8 +37,29 @@ module.exports = (config, {strapi})=> {
 
     console.log('EJS-MIDDLEWARE directory where your app lives:'+appDir);
     console.log('EJS-MIDDLEWARE directory where your .ejs files live:'+viewDir);
+
+    // The real meat of the thing is here.
+    // This adds a method render to the ctx object so that you can call
+    // await ctx.render('my-ejs-file-name',{bunch of data to be used in the ejs});
+    // which returns a clump of html (e.g. ctx.body = html generated from ejs file)
+    render(strapi.server.app,{
+	root: viewDir,
+	fs: fs, //require('mz/fs'),
+	layout: false, //'template',
+	viewExt: 'ejs',
+	cache: false,
+	debug: false
+    });
     
-    //return an array of directory names below a given path.
+
+    // Everything below here is just a TEST of the render.
+    // This sets up some test routes for everything below the viewDir to
+    // render the ejs.
+    // Normally, we would just ctx.render a page from some other route endpoint.
+    // 
+    // helper function to get around obtuse koa-router path syntax
+    // return an array of directory names below a given path.
+
     let walkDir = function(dir) {
 	var results = [dir];
 	var dirList = fs.readdirSync(dir,{withFileTypes: true}).filter((f) => f.isDirectory());
@@ -66,15 +87,6 @@ module.exports = (config, {strapi})=> {
     });
     console.log('EJS-MIDDLEWARE ROUTES ADDED',routes);
 
-    render(strapi.server.app,{
-	root: viewDir,
-	fs: fs, //require('mz/fs'),
-	layout: false, //'template',
-	viewExt: 'ejs',
-	cache: false,
-	debug: false
-    });
-    
     strapi.server.routes(routes);
     /*
     [

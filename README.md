@@ -4,18 +4,30 @@
 intended to do in strapi what the creators would not like you to do. I dont know why they wouldnt want it but that is the impression I get.**
 
 ## My config ##
+- strapi 4.2.3
+- which currently contains Koa 2.13.4
 - postgres 12
 - node 16.3
 - npm 7.15
 
-## Requirements
-A running strapi4 app.
+## Quick Start
+Need A clean running strapi4 app.
 e.g.   
 `psql> create database cowdb; `  
 `$ npx create-strapi-app@latest cow`   
 Fill in database connection information for database cowdb.
    
-`git clone`
+`git clone git@github.com:crussell42/strapion.git`
+`
+To play with the ejs-middleware 
+Note: strapi does not seem to read symbolic links..
+So you need to copu or merge these files into your app
+-or- clone the code inside your app but this can get messy.
+# cd strapion
+# cp ejs/config/middlewares.js ../cow/config/
+# cp ejs/src/middlewares/ejs-middleware.js ../cow/src/middlewares/
+
+`
 
 ## Objective
 1. Place to collect thoughts and notes on how I broke the rules of strapi.
