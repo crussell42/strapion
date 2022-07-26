@@ -10,9 +10,16 @@ intended to do in strapi what the creators would not like you to do. I dont know
 - node 16.3
 - npm 7.15
 
-## Quick Start
-### EJS ejs-middleware test (contained in the ejs directory) 
-Test a basic .ejs file render. (From browser http://localhost:1337/dog/views/pig.ejs) 
+## FUN TAGS EJS,MPA,VUE,VUETIFY
+EJS-VUE-MPA...Its an oldstyle Vue 2 app completely downloaded to browser after being rendered by the EJS engine.  
+An Eue (pronounced Ewwww) app...  
+
+**I call dibs on the EUE (Ewwwww) app moniker**  
+
+## Quick Starts
+### EJS ejs-middleware test of an EJS-VUE-MPA app (contained in the ejs directory) 
+There is a EJS-VUE-MPA test and a straight .ejs->html test  
+Test a basic .ejs file render. (From browser http://localhost:1337/dog/views/pig-vue.ejs) 
 Need A clean running strapi4 app named "cow".
 e.g.   
 `psql> create database cowdb; `  
@@ -41,45 +48,50 @@ So you need to copy or merge these files into cow.
 `$ cd ../cow`  
 `$ mkdir dog`  
 `$ mkdir dog/views`  
-`$ cp ../strapion/ejs/test-views/pig.ejs dog/views/`  
+`$ mkdir public/images`  
+`$ cp ../strapion/ejs/test-views/*.ejs dog/views/`  
+`$ cp ../strapion/ejs/test-images/* public/images/`  
 `$ npm run develop`  
 
 Browser to http://localhost:1337/dog/views/pig-vue.ejs  
+Should see a very simple Vuetify application with some dog pictures.  
 
-NOTE: The Content Security Policy header of returned html needs to be changed to allow 
-<script> tags to get https stuff.
-See https://github.com/strapi/strapi/issues/11637#issuecomment-977244572 for the answer which is included
-in the config/middlewares provided...This is good stuff to know.  
-Also, this clue led me to add the 'unsafe-eval' to the Content Security Policy config.  
-VueJS has 2 different versions: the full version and the runtime version. 'unsafe-eval' is only needed for the full version of VueJS; the runtime version doesn't need it. See details here.  
-You may see things like   
+Browser to http://localhost:1337/dog/views/pig.ejs
+Should see a very basic html hello world message generated from the pig.ejs file.
+ 
+If you see Content Security Policy issues in your browser javascript console,
+make sure you changed cow/config/middlewares.js
 
-[Vue warn]: It seems you are using the standalone build of Vue.js in an environment with Content Security Policy that prohibits unsafe-eval. The template compiler cannot work in this environment. Consider relaxing the policy to allow unsafe-eval or pre-compiling your templates into render functions.  
+    CSP NOTES: The Content Security Policy header of returned html needs to be changed to allow 
+    <script> tags to get https stuff.  
+    Please see https://github.com/strapi/strapi/issues/11637#issuecomment-977244572 for the answer which is included
+    in the config/middlewares.js provided...  
+    This is good stuff to know.  
+    Also, this clue led me to add the 'unsafe-eval' to the Content Security Policy config as well
+    to allow the Vue compiler to do its thing on the client side.  
+        >VueJS has 2 different versions: the full version and the runtime version. 
+        >'unsafe-eval' is only needed for the full version of VueJS; the runtime version doesn't need it. See details here.  
 
-Sample config  
-<code>
-module.exports = ({ env }) => [
-  'strapi::errors',
-  {
-    name: 'strapi::security',
-    config: {
-      contentSecurityPolicy: {
-        directives: {
-          'script-src': ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net'],
-          'img-src': ["'self'", 'data:', 'cdn.jsdelivr.net', 'strapi.io', `${env('AWS_BUCKET')}.s3.${env('AWS_REGION')}.amazonaws.com`],
+    [Vue warn]: It seems you are using the standalone build of Vue.js in an environment with Content Security Policy 
+    that prohibits unsafe-eval. The template compiler cannot work in this environment. 
+    Consider relaxing the policy to allow unsafe-eval or pre-compiling your templates into render functions.  
+
+strapi::security middleware config changes  
+
+    module.exports = ({ env }) => [
+        'strapi::errors',
+        {
+            name: 'strapi::security',
+            config: {
+                contentSecurityPolicy: {
+                    directives: {
+                        'script-src': ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net'],
+                        'img-src': ["'self'", 'data:', 'cdn.jsdelivr.net', 'strapi.io', `${env('AWS_BUCKET')}.s3.${env('AWS_REGION')}.amazonaws.com`],
+                    },
+            }
         },
-      }
-    },
-  },
-  'strapi::cors',
-  'strapi::poweredBy',
-  'strapi::logger',
-  'strapi::query',
-  'strapi::body',
-  'strapi::favicon',
-  'strapi::public',
-];
-</code>
+      },
+ 
 
 ## Objective
 1. Place to collect thoughts and notes on how I broke the rules of strapi.
