@@ -12,14 +12,15 @@ intended to do in strapi what the creators would not like you to do. I dont know
 
 ## FUN TAGS EJS,MPA,VUE,VUETIFY
 EJS-VUE-MPA...Its an oldstyle Vue 2 app completely downloaded to browser after being rendered by the EJS engine.  
-An Eue (pronounced Ewwww) app...  
+An Eue (pronounced Ewwww) app...   
 
-**I call dibs on the EUE (Ewwwww) app moniker**  
+**I call dibs on the EUE (Ewwwww) app moniker**   
 
-## Quick Starts
-### EJS ejs-middleware test of an EJS-VUE-MPA app (contained in the ejs directory) 
-There is a EJS-VUE-MPA test and a straight .ejs->html test  
-Test a basic .ejs file render. (From browser http://localhost:1337/dog/views/pig-vue.ejs) 
+## Quick Starts  
+### EJS ejs-middleware test
+There are a couple test .ejs files. ejs/test-views/pig.ejs and ejs/test-views/pig-vue.ejs.  
+The intent here is to demo a plain .ejs to html and a .ejs to html that is a client only Vue app.  
+
 Need A clean running strapi4 app named "cow".
 e.g.   
 `psql> create database cowdb; `  
@@ -41,20 +42,21 @@ Note: strapi does not seem to read symbolic links...hard links may work dependin
 So you need to copy or merge these files into cow.   
 -or- clone the repo inside cow but this can get messy.  
 
-`$ cd strapion`  
-`$ cp ejs/config/middlewares.js ../cow/config/`  
-`$ cp ejs/src/middlewares/ejs-middleware.js ../cow/src/middlewares/`  
+    $ cd strapion   
+    $ cp ejs/config/middlewares.js ../cow/config/   
+    $ cp ejs/src/middlewares/ejs-middleware.js ../cow/src/middlewares/   
 
-`$ cd ../cow`  
-`$ mkdir dog`  
-`$ mkdir dog/views`  
-`$ mkdir public/images`  
-`$ cp ../strapion/ejs/test-views/*.ejs dog/views/`  
-`$ cp ../strapion/ejs/test-images/* public/images/`  
-`$ npm run develop`  
+    $ cd ../cow    
+    $ mkdir dog   
+    $ mkdir dog/views  
+    $ mkdir public/images 
+    
+    $ cp ../strapion/ejs/test-views/*.ejs dog/views/  
+    $ cp ../strapion/ejs/test-images/* public/images/  
+    $ npm run develop  
 
 Browser to http://localhost:1337/dog/views/pig-vue.ejs  
-Should see a very simple Vuetify application with some dog pictures.  
+Should see a very simple EJS,Vue,Vuetify application with some dog pictures.  
 
 Browser to http://localhost:1337/dog/views/pig.ejs
 Should see a very basic html hello world message generated from the pig.ejs file.
@@ -62,21 +64,22 @@ Should see a very basic html hello world message generated from the pig.ejs file
 If you see Content Security Policy issues in your browser javascript console,
 make sure you changed cow/config/middlewares.js
 
-    CSP NOTES: The Content Security Policy header of returned html needs to be changed to allow 
-    <script> tags to get https stuff.  
-    Please see https://github.com/strapi/strapi/issues/11637#issuecomment-977244572 for the answer which is included
+    CSP NOTES: The Content Security Policy header of returned html needs to be changed to allow   
+    <script> tags to get https stuff.   
+    
+    Please see https://github.com/strapi/strapi/issues/11637#issuecomment-977244572 for the answer which is included   
     in the config/middlewares.js provided...  
     This is good stuff to know.  
-    Also, this clue led me to add the 'unsafe-eval' to the Content Security Policy config as well
+    Also, this clue led me to add the 'unsafe-eval' to the Content Security Policy config as well  
     to allow the Vue compiler to do its thing on the client side.  
-        >VueJS has 2 different versions: the full version and the runtime version. 
+        >VueJS has 2 different versions: the full version and the runtime version.  
         >'unsafe-eval' is only needed for the full version of VueJS; the runtime version doesn't need it. See details here.  
 
     [Vue warn]: It seems you are using the standalone build of Vue.js in an environment with Content Security Policy 
     that prohibits unsafe-eval. The template compiler cannot work in this environment. 
     Consider relaxing the policy to allow unsafe-eval or pre-compiling your templates into render functions.  
 
-strapi::security middleware config changes  
+### strapi::security middleware config changes  
 
     module.exports = ({ env }) => [
         'strapi::errors',
